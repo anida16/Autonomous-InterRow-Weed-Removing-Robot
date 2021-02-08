@@ -132,13 +132,15 @@ def main():
                 output_pin.value = False
                 y += font.getsize("OVERHEATING")[1]
                 draw.text((x+5, y+20), "OVERHEATING", font=font2, fill="#0000FF") 
-                #time.sleep(15)       
+                #time.sleep(15) 
+                time.sleep(5)      
             
             else:
                 
                 #GPIO.output(output_pin, GPIO.HIGH)
                 output_pin.value = True
                 disp.image(image)
+                #time.sleep(5) 
 
             disp.image(image)
             time.sleep(.1)

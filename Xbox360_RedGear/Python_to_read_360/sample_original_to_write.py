@@ -127,6 +127,8 @@ while not joy.Back():
     showIf((0.96<joy.rightTrigger()<=0.98), 0x3B)
     showIf((0.98<joy.rightTrigger()<=1), 0x3C)
     
+
+    
     # Move cursor back to start of line
     show(chr(13))
 # Close out when done
