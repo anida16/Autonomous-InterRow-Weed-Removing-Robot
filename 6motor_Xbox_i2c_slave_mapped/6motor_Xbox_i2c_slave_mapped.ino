@@ -1,3 +1,4 @@
+
 int dir1 = 50; //Motor 1 Direction Pin
 int dir2 = 48; //Motor 2 Direction Pin
 int dir3 = 46; //Motor 3 Direction Pin
@@ -17,8 +18,19 @@ int pwm;
 volatile boolean xbox_sending = false;
 int xbox_says;
 int heading_angle;
-int pwm_map;
-
+double pwm_map;
+int Final_pwm_360;
+double pwm_map_360;
+double pwm_map_temp_360;
+int Final_pwm_90;
+double pwm_map_90;
+double pwm_map_temp_90;
+int Final_pwm_270;
+double pwm_map_270;
+double pwm_map_temp_270;
+int Final_pwm_180;
+double pwm_map_180;
+double pwm_map_temp_180;
 #include <Wire.h>
 
 void setup() {
@@ -312,9 +324,9 @@ void loop() {
     //61 is for no command
     if (xbox_says == 61) //Left Stick angle
     {
-      Serial.println("Stick Angle is 0");
-      heading_angle = 0;
-    }
+      Serial.println("Stick Angle is 360");
+      heading_angle = 360;
+   }
     if (xbox_says == 62) //Left Stick angle
     {
       Serial.println("Stick Angle is 3");
@@ -915,21 +927,127 @@ void loop() {
       Serial.println("Stick Angle is 360");
       heading_angle = 360;
     }
-    //////////////////////Heading Angle///////////////////////////
+    /////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
+    //////////////////////////Else Loop///////////////////////////
+
 
     //Serial.println(xbox_says);
-
     if (xbox_says == 182)
     {
       brake();
       pwm = 0;
+      heading_angle = -256;
+      Final_pwm_90 = 256;
+      Final_pwm_180 = 256;
+      Final_pwm_270 = 256;
+      Final_pwm_360 = 256;
     }
 
+    //////////////////////////////////////////////////////////////
+    //////////////////////////Else Loop///////////////////////////
+
+
+    //Serial.println(pwm);
+
+    if (heading_angle > 0 && heading_angle <= 90)
+    {
+      pwm_map_90 = map(heading_angle, 0, 90, -1000, 1000);
+      pwm_map_temp_90 = pwm_map_90 / 1000;
+      Final_pwm_90 = pwm_map_temp_90 * pwm;
+      //Serial.println(Final_pwm_90);
+    }
+    if (heading_angle > 90 && heading_angle <= 180)
+    {
+      pwm_map_180 = map(heading_angle, 90, 180, -1000, 1000);
+      pwm_map_temp_180 = pwm_map_180 / 1000;
+      Final_pwm_180 = pwm_map_temp_180 * pwm;
+      //Serial.println(Final_pwm_180);
+    }
+    if (heading_angle > 180 && heading_angle <= 270)
+    {
+      pwm_map_270 = map(heading_angle, 180, 270, -1000, 1000);
+      pwm_map_temp_270 = pwm_map_270 / 1000;
+      Final_pwm_270 = pwm_map_temp_270 * pwm;
+      //Serial.println(Final_pwm_270);
+    }
+    if (heading_angle > 270 && heading_angle <= 360)
+    {
+      pwm_map_360 = map(heading_angle, 270, 360, -1000, 1000);
+      pwm_map_temp_360 = pwm_map_360 / 1000;
+      Final_pwm_360 = pwm_map_temp_360 * pwm;
+      //Serial.println(Final_pwm_360);
+    }
+    // Serial.println(pwm_map_temp);
+    //Serial.println(Final_pwm_90);
+    //Serial.println(Final_pwm_180);
+    //Serial.println(Final_pwm_270);
+    //Serial.println(Final_pwm_360);
+
+    if (Final_pwm_90 > 0 && Final_pwm_90 <= 255) //angle 45 to 90 degree
+    {
+
+      forward_left(pwm);
+      forward_right (abs(Final_pwm_90));
+      Serial.println("loop 1");
+      Final_pwm_90 = 256;
+    }
+    if (Final_pwm_90 < 0 && Final_pwm_90 > -255) // angle 0 to 45 degree
+    {
+      forward_left(pwm);
+      reverse_right(abs(Final_pwm_90));
+      Serial.println("loop 2");
+      Final_pwm_90 = 256;
+    }
+    if (Final_pwm_180 > 0 && Final_pwm_180 <= 255) // angle 125 to 180 degree
+    {
+      reverse_left(abs(Final_pwm_180));
+      forward_right (pwm);
+      Serial.println("loop 3");
+      Final_pwm_180 = 256;
+    }
+
+    if (Final_pwm_180 < 0 && Final_pwm_180 > -255)  // angle 90 to 125 degree
+    {
+      forward_left(abs(Final_pwm_180));
+      forward_right(pwm);
+      Serial.println("loop 4");
+      Final_pwm_180 = 256;
+    }
+
+    if (Final_pwm_270 > 0 && Final_pwm_270 <= 255) //angle 225 to 270 degree
+    {
+      reverse_left(pwm);
+      reverse_right (abs(Final_pwm_270));
+      Serial.println("loop 5");
+      Final_pwm_270 = 256;
+    }
+    if (Final_pwm_270 < 0 && Final_pwm_270 > -255) // angle 180 to 225 degree
+    {
+      reverse_left(pwm);
+      forward_right(abs(Final_pwm_270));
+      Serial.println("loop 6");
+      Final_pwm_270 = 256;
+    }
+    if (Final_pwm_360 > 0 && Final_pwm_360 <= 255) // angle 315 to 360 degree
+    {
+      forward_left(abs(Final_pwm_360));
+      reverse_right (pwm);
+      Serial.println("loop 7");
+      Final_pwm_360 = 256;
+    }
+
+    if (Final_pwm_360 < 0 && Final_pwm_360 > -255)  // angle 270 to 315 degree
+    {
+      reverse_left(abs(Final_pwm_360));
+      reverse_right(pwm);
+      Serial.println("loop 8");
+      Final_pwm_360 = 256;
+    }
     
-    Serial.println(pwm);
-    pwm_map = map(heading_angle,0,360,0,255);
-    Serial.println(pwm_map);
+
+
+
     xbox_sending = false;
   }
 
@@ -975,40 +1093,57 @@ void receiveEvent(int howMany) {
   xbox_sending = true;
 }
 
-void forward(int pwm_map) {
+void forward_left(int pwm_map) {
+  Serial.print("Forward Left");
+  Serial.println(pwm_map);
   digitalWrite(dir1, HIGH);
   digitalWrite(dir2, HIGH);
   digitalWrite(dir3, HIGH);
-  digitalWrite(dir4, LOW);
-  digitalWrite(dir5, LOW);
-  digitalWrite(dir6, LOW);
 
   analogWrite(pwm1, pwm_map);
   analogWrite(pwm2, pwm_map);
   analogWrite(pwm3, pwm_map);
+}
+
+void forward_right(int pwm_map) {
+  Serial.print("Forward Right");
+  Serial.println(pwm_map);
+  digitalWrite(dir4, LOW);
+  digitalWrite(dir5, LOW);
+  digitalWrite(dir6, LOW);
+
   analogWrite(pwm4, pwm_map);
   analogWrite(pwm5, pwm_map);
   analogWrite(pwm6, pwm_map);
 }
 
-void reverse(int pwm_map) {
+void reverse_left(int pwm_map) {
+  Serial.print("Reverse Left");
+  Serial.println(pwm_map);
   digitalWrite(dir1, LOW);
   digitalWrite(dir2, LOW);
   digitalWrite(dir3, LOW);
-  digitalWrite(dir4, HIGH);
-  digitalWrite(dir5, HIGH);
-  digitalWrite(dir6, HIGH);
 
   analogWrite(pwm1, pwm_map);
   analogWrite(pwm2, pwm_map);
   analogWrite(pwm3, pwm_map);
+}
+
+
+void reverse_right(int pwm_map) {
+  Serial.print("Reverse Right");
+  Serial.println(pwm_map);
+  digitalWrite(dir4, HIGH);
+  digitalWrite(dir5, HIGH);
+  digitalWrite(dir6, HIGH);
+
   analogWrite(pwm4, pwm_map);
   analogWrite(pwm5, pwm_map);
   analogWrite(pwm6, pwm_map);
 }
 
 void brake() {
-  Serial.println("Brake");
+  //Serial.println("Brake");
   digitalWrite(dir1, LOW);
   digitalWrite(dir2, LOW);
   digitalWrite(dir3, LOW);
