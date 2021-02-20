@@ -83,18 +83,22 @@ void loop() {
     }
     if (xbox_says == 5) //Dpad Up
     {
+      forward();
       Serial.println("Dpad Up");
     }
     if (xbox_says == 6) //Dpad Down
     {
       Serial.println("Dpad Down");
+      reverse();
     }
     if (xbox_says == 7) //Dpad Left
     {
       Serial.println("Dpad Left");
+      clock_wise(150);
     }
     if (xbox_says == 8) //Dpad Right
     {
+      anticlock_wise(150);
       Serial.println("Dpad Right");
     }
     if (xbox_says == 9 )
@@ -326,7 +330,7 @@ void loop() {
     {
       Serial.println("Stick Angle is 360");
       heading_angle = 360;
-   }
+    }
     if (xbox_says == 62) //Left Stick angle
     {
       Serial.println("Stick Angle is 3");
@@ -1044,7 +1048,7 @@ void loop() {
       Serial.println("loop 8");
       Final_pwm_360 = 256;
     }
-    
+
 
 
 
@@ -1092,6 +1096,43 @@ void receiveEvent(int howMany) {
 
   xbox_sending = true;
 }
+
+void forward() {
+  Serial.print("Forward Slow");
+  Serial.println(pwm_map);
+  digitalWrite(dir1, HIGH);
+  digitalWrite(dir2, HIGH);
+  digitalWrite(dir3, HIGH);
+  digitalWrite(dir4, LOW);
+  digitalWrite(dir5, LOW);
+  digitalWrite(dir6, LOW);
+
+  analogWrite(pwm1, 150);
+  analogWrite(pwm2, 150);
+  analogWrite(pwm3, 150);
+  analogWrite(pwm4, 150);
+  analogWrite(pwm5, 150);
+  analogWrite(pwm6, 150);
+}
+
+void reverse() {
+  Serial.print("Forward Slow");
+  Serial.println(pwm_map);
+  digitalWrite(dir1, LOW);
+  digitalWrite(dir2, LOW);
+  digitalWrite(dir3, LOW);
+  digitalWrite(dir4, HIGH);
+  digitalWrite(dir5, HIGH);
+  digitalWrite(dir6, HIGH);
+
+  analogWrite(pwm1, 150);
+  analogWrite(pwm2, 150);
+  analogWrite(pwm3, 150);
+  analogWrite(pwm4, 150);
+  analogWrite(pwm5, 150);
+  analogWrite(pwm6, 150);
+}
+
 
 void forward_left(int pwm_map) {
   Serial.print("Forward Left");
