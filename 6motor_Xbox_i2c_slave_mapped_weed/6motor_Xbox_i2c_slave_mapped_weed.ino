@@ -14,6 +14,9 @@ int pwm5 = 6; //Motor 5 PWM Pin
 int pwm6 = 7; //Motor 6 PWM Pin
 
 int jetson_cooling = 9;
+
+int weeding_up = 10;
+int weeding_down = 11;
 int pwm;
 volatile boolean xbox_sending = false;
 int xbox_says;
@@ -38,6 +41,9 @@ void setup() {
   Wire.begin(0x8);
   Wire.onReceive(receiveEvent);
 
+  pinMode(weeding_up, OUTPUT);
+  pinMode(weeding_down, OUTPUT);
+
   pinMode(pwm1, OUTPUT);
   pinMode(pwm2, OUTPUT);
   pinMode(pwm3, OUTPUT);
@@ -59,6 +65,7 @@ void setup() {
 
 void loop() {
 
+
   if (xbox_sending == true) {
 
     ///////////////////////////////////////////////////////////////
@@ -67,46 +74,58 @@ void loop() {
     if (xbox_says == 1) //Button A
     {
       Serial.println("Button A");
+      digitalWrite(weeding_up, HIGH);
+      digitalWrite(weeding_down, LOW);
     }
+
     if (xbox_says == 2) //Button B
     {
       Serial.println("Button B");
+      digitalWrite(weeding_up, LOW);
+      digitalWrite(weeding_down, HIGH);
     }
+
     if (xbox_says == 3) //Button X
     {
       Serial.println("Button X");
     }
+
     if (xbox_says == 4) //Button Y
     {
       Serial.println("Button Y");
-
     }
+
     if (xbox_says == 5) //Dpad Up
     {
       forward();
       Serial.println("Dpad Up");
     }
+
     if (xbox_says == 6) //Dpad Down
     {
       Serial.println("Dpad Down");
       reverse();
     }
+
     if (xbox_says == 7) //Dpad Left
     {
       Serial.println("Dpad Left");
       clock_wise(150);
     }
+
     if (xbox_says == 8) //Dpad Right
     {
       anticlock_wise(150);
       Serial.println("Dpad Right");
     }
+
     if (xbox_says == 9 )
     {
       clock_wise(255);
       Serial.println("Left Button");
       //xbox_says = 0;
     }
+
     if (xbox_says == 10)
     {
       anticlock_wise(255);
@@ -946,6 +965,9 @@ void loop() {
       Final_pwm_180 = 256;
       Final_pwm_270 = 256;
       Final_pwm_360 = 256;
+
+      digitalWrite(weeding_up, HIGH);
+      digitalWrite(weeding_down, HIGH);
     }
 
     //////////////////////////////////////////////////////////////
