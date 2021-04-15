@@ -3,11 +3,12 @@ import xbox
 import smbus
 import time
 import math
-
+import Jetson.GPIO as GPIO
+import os
 bus = smbus.SMBus(1)
 address = 0x08
 
-
+manual_button = 33
 # Format floating point number to string format -x.xxx
 def fmtFloat(n):
     return '{:6.3f}'.format(n)
@@ -71,6 +72,14 @@ joy = xbox.Joystick()
 print("Xbox controller sample: Press Back button to exit")
 while not joy.Back():
 
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(manual_button, GPIO.IN)  # button pin set as input
+    
+    if GPIO.input(33) is 1:
+        print("exiting")
+        exit()
+
+        
     x, y = joy.leftStick()
     angle = angleFromCoords(x,y)
 
@@ -85,7 +94,7 @@ while not joy.Back():
     show("  Buttons:")
 
     #showIf(joy.A() and joy.B() and joy.X() and joy.X() and joy.dpadUp() and joy.dpadDown() and joy.dpadLeft() and joy.dpadRight(), 0xB6)
-    if (joy.A() is 0 and joy.B() is 0  and joy.X() is 0 and joy.Y() is 0 and joy.dpadUp() is 0 and joy.dpadDown() is 0 and joy.dpadLeft() is 0 and joy.dpadRight() is 0 and joy.leftBumper() is 0 and joy.rightBumper() is 0 and angle is -1 and math.ceil(joy.rightTrigger()) is 0):
+    if (joy.A() is 0 and joy.B() is 0  and joy.X() is 0 and joy.Y() is 0 and joy.dpadUp() is 0 and joy.dpadDown() is 0 and joy.dpadLeft() is 0 and joy.dpadRight() is 0 and joy.leftBumper() is 0 and joy.rightBumper() is 0 and angle is -1 and math.ceil(joy.rightTrigger()) is 0 and math.ceil(joy.leftTrigger()) is 0):
         writeData(0xB6)
         #print("bruh")
 
@@ -289,7 +298,7 @@ while not joy.Back():
     showIf(354<angle<=357, 0xB4)
     showIf(357<angle<=360, 0xB5)
 
-    
+    showIf(joy.leftTrigger(), 0xB7)
     # Move cursor back to start of line
     show(chr(13))
 # Close out when done

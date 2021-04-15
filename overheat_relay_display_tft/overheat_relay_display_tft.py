@@ -15,6 +15,12 @@ import os
 # Pin Definitions
 output_pin = digitalio.DigitalInOut(board.D18)  # BOARD pin 12, BCM pin 18
 output_pin.direction = digitalio.Direction.OUTPUT
+button_state = digitalio.DigitalInOut(board.D16)
+button_manual = digitalio.DigitalInOut(board.D13)
+auto_button = digitalio.DigitalInOut(board.D6)
+semi_auto_button = digitalio.DigitalInOut(board.D12)
+iot_button = digitalio.DigitalInOut(board.D19)
+
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
@@ -33,7 +39,7 @@ spi = board.SPI()
 #disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=90    # 1.3", 1.54" ST7789
 #disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
 #disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
-disp = st7735.ST7735R(spi, rotation=270,                           # 1.8" ST7735R
+disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
 #disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
 #disp = st7735.ST7735R(spi, rotation=90, bgr=True,                 # 0.96" MiniTFT ST7735R
 #disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
@@ -123,6 +129,20 @@ def main():
             y += font.getsize(Disk)[1]
             draw.text((x, y), Temp, font=font2, fill="#FF00FF")
 
+            if button_manual.value is False:
+                draw.text((0, 90), "Manual Mode", font=font2, fill="#0000FF") 
+            
+            if auto_button.value is False:
+                draw.text((0, 90), "Auto Mode", font=font2, fill="#0000FF") 
+            
+            if semi_auto_button.value is False:
+                draw.text((0, 90), "Semi-Auto Mode", font=font2, fill="#0000FF") 
+
+            if iot_button.value is False:
+                draw.text((0, 90), "IoT Mode", font=font2, fill="#0000FF") 
+            
+            #print(button_manual.value)
+
             if float(Temp2) > 50:
                 #y += font.getsize("OVERHEATING")[1]
                 #draw.text((x+5, y+20), "OVERHEATING", font=font2, fill="#0000FF")  
@@ -131,8 +151,13 @@ def main():
                 #curr_value = GPIO.LOW
                 output_pin.value = False
                 y += font.getsize("OVERHEATING")[1]
-                draw.text((x+5, y+20), "OVERHEATING", font=font2, fill="#0000FF") 
+                draw.text((x+5, y+8), "OVERHEATING", font=font2, fill="#0000FF") 
                 #time.sleep(15) 
+                #print(button_state.value)
+                if button_state.value is True:
+                    print("exiting")
+                    #GPIO.cleanup()  
+                    exit()
                 time.sleep(5)      
             
             else:
@@ -140,6 +165,12 @@ def main():
                 #GPIO.output(output_pin, GPIO.HIGH)
                 output_pin.value = True
                 disp.image(image)
+                #x = GPIO.input(15)
+                #print(button_state.value)
+                if button_state.value is True:
+                    print("exiting")
+                    #GPIO.cleanup()  
+                    exit()
                 #time.sleep(5) 
 
             disp.image(image)

@@ -1,0 +1,12 @@
+[Unit]
+Description=mything: do my own thing
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/local/bin/Button_Start.sh
+Restart=always
+StartLimitInterval=10
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
