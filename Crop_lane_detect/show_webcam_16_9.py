@@ -1,6 +1,6 @@
 import cv2
 
-camera_index = 0
+camera_index = 2
 cap = cv2.VideoCapture(camera_index,cv2.CAP_V4L)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 848)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)

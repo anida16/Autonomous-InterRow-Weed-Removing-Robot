@@ -1,18 +1,83 @@
+from __future__ import print_function
 import cv2
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 
+#import xbox
+import smbus
+import time
+import math
+import Jetson.GPIO as GPIO
+import os
+bus = smbus.SMBus(1)
+address = 0x08
+
+semi_auto_button = 32
 def nothing(x):
     pass
 
+def fmtFloat(n):
+    return '{:6.3f}'.format(n)
+    #writeData(n)
+
+# Print one or more values without a line feed
+def show(*args):
+    for arg in args:
+        print(arg, end="")
+        #writeData(arg)
+        #print()
+
+# Print true or false value based on a boolean, without linefeed
+def showIf(boolean, ifTrue, ifFalse=" "):
+    if boolean:
+        show(ifTrue)
+        #print(ifTrue)
+        writeData(ifTrue)
+    else:
+        show(ifFalse)
+
+def writeData(value):
+    #time.sleep(3)
+    #byteValue = StringToBytes(value)  
+    #bus.write_i2c_block_data(address,0x08,byteValue) #first byte is 0=command byte.. just is.
+    bus.write_byte(address, value)
+    return -1
+
+def StringToBytes(val):
+        retVal = []
+        for c in val:
+                retVal.append(ord(c))
+        return retVal
+
+def angleFromCoords(x,y):
+    angle = 0.0
+    if x==0.0 and y==0.0:
+        angle = -1
+    elif x>=0.0 and y>=0.0:
+        # first quadrant
+        angle = math.degrees(math.atan(y/x)) if x!=0.0 else 90.0
+    elif x<0.0 and y>=0.0:
+        # second quadrant
+        angle = math.degrees(math.atan(y/x))
+        angle += 180.0
+    elif x<0.0 and y<0.0:
+        # third quadrant
+        angle = math.degrees(math.atan(y/x))
+        angle += 180.0
+    elif x>=0.0 and y<0.0:
+        # third quadrant
+        angle = math.degrees(math.atan(y/x)) if x!=0.0 else -90.0
+        angle += 360.0
+    return angle
+ 
 camera_index = 0
 cap = cv2.VideoCapture(camera_index, cv2.CAP_V4L)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 848)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 #img = cv2.imread("Green_Crop_1.jpg")
-
+'''
 def calculate_coordinates(img, parameters):
     slope, intercept = parameters
     # Sets initial y-coordinate as height from top down (bottom of the frame)
@@ -40,7 +105,7 @@ def visualize_lines(img, lines):
                 #print("printing lines")
                 cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 5)
     return lines_visualize
-
+'''
 '''
 def calculate_lines(img, lines):
     # Empty arrays to store the coordinates of the left and right lines
@@ -148,10 +213,17 @@ def calculate_lines(img, lines):
 #Adjust thresold & rho to increase/decrease no. of lines
 
 
-
+GPIO.setmode(GPIO.BOARD)
 #roi = img[0: 280, 150: 320]
 
 while True:
+
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(semi_auto_button, GPIO.IN)  # button pin set as input
+    
+    if GPIO.input(32) is 1:
+        print("exiting")
+        exit()
 
     ret, img = cap.read()
     ret, original = cap.read()
@@ -404,6 +476,19 @@ while True:
    
         print("clockwise")
         #print(x1)
+
+    parameters_left = np.polyfit((x1, x2), (y1, y2), 1)
+    slope_left = parameters_left[0]
+    y_intercept_left = parameters_left[1]
+
+    parameters_right = np.polyfit((x3, x4), (y3, y4), 1)
+    slope_right = parameters_right[0]
+    y_intercept_right = parameters_right[1]   
+
+    print("slope_left",slope_left) 
+    print("slope_right",slope_right)
+
+
     #bottom_left
     #top_left
 

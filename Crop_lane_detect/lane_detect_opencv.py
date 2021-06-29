@@ -21,16 +21,16 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 while True:
 
     ret, img = cap.read()
-    #ret, original = cap.read()
+    ret, original = cap.read()
     #original = cv2.imread("Green_Crop_1.jpg")
-    '''
-    cv2.circle(original, (137, 5), 5, (0, 0, 255), -1)
-    cv2.circle(original, (576, 5), 5, (0, 0, 255), -1)
-    cv2.circle(original, (5, 370), 5, (0, 0, 255), -1)
-    cv2.circle(original, (708, 370), 5, (0, 0, 255), -1)
-    '''
-    pts1 = np.float32([[137, 5], [576, 5], [5, 313], [708, 313]])
-    pts2 = np.float32([[0, 0], [500, 0], [0, 600], [500, 600]])
+    
+    cv2.circle(original, (148, 4), 5, (0, 0, 255), -1)
+    cv2.circle(original, (725, 5), 5, (0, 0, 255), -1)
+    cv2.circle(original, (16, 477), 5, (0, 0, 255), -1)
+    cv2.circle(original, (805, 478), 5, (0, 0, 255), -1)
+
+    pts1 = np.float32([[148, 4], [725, 5], [16, 477], [805, 478]])
+    pts2 = np.float32([[0, 0], [400, 0], [0, 600], [400, 600]])
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
 
     img = cv2.warpPerspective(img, matrix, (500, 600))
@@ -62,8 +62,8 @@ while True:
     hsv = cv2.cvtColor(img2, cv2.COLOR_BGR2HSV)
     #lower_blue = np.array([50, 75, 111]) #real photo
     #upper_blue = np.array([61, 255, 255]) #real photo
-    lower_blue = np.array([38, 83, 122])
-    upper_blue = np.array([61, 255, 255])
+    lower_blue = np.array([45, 62, 52]) #35 #38, 83, 122 for evening #42, 52, 140 skips inside plant - for morning
+    upper_blue = np.array([72, 255, 255])
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
     result = cv2.bitwise_and(img2, img2, mask=mask)
 
@@ -125,7 +125,7 @@ while True:
 #p2 = cv2.getTrackbarPos("point2", "Trackbars")
 #p3 = cv2.getTrackbarPos("point3", "Trackbars")
 
-    lines = cv2.HoughLinesP(skel, 5, np.pi/180, 1000, maxLineGap=300)
+    lines = cv2.HoughLinesP(skel, 4, np.pi/180, 1000, maxLineGap=1500)
     #for gazebo_ss.png (skel, 4, np.pi/180, 48, maxLineGap=500)
     #lines = cv2.HoughLinesP(skel, 5, np.pi/180, 1100, maxLineGap=50)
     #for tushar groundnut image skel, 5, np.pi/180, 600, maxLineGap=50
@@ -146,7 +146,7 @@ while True:
 
     #print("line")
 
-    #cv2.imshow("Original", original)
+    cv2.imshow("Original", original)
     #cv2.imshow("hsv", hsv)
     #cv2.imshow("mask", mask)
     #cv2.imshow("result", result)
