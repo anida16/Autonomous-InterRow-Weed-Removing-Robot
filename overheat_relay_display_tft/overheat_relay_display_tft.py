@@ -15,6 +15,8 @@ import os
 # Pin Definitions
 output_pin = digitalio.DigitalInOut(board.D18)  # BOARD pin 12, BCM pin 18
 output_pin.direction = digitalio.Direction.OUTPUT
+output_pin1 = digitalio.DigitalInOut(board.D23)
+output_pin1.direction = digitalio.Direction.OUTPUT
 button_state = digitalio.DigitalInOut(board.D16)
 button_manual = digitalio.DigitalInOut(board.D13)
 auto_button = digitalio.DigitalInOut(board.D6)
@@ -83,6 +85,7 @@ def main():
     #GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.HIGH)
     #output_pin.value = True
     output_pin.value = True
+    output_pin1.value = False
     
     print("Starting demo now! Press CTRL+C to exit")
     #curr_value = GPIO.HIGH
@@ -150,8 +153,13 @@ def main():
                 #curr_value ^= GPIO.HIGH
                 #curr_value = GPIO.LOW
                 output_pin.value = False
+                output_pin1.value = False
                 y += font.getsize("OVERHEATING")[1]
                 draw.text((x+5, y+8), "OVERHEATING", font=font2, fill="#0000FF") 
+
+                if float(Temp2) > 65:
+                    output_pin1.value = True
+                    #print("Overheating buzzer ON")
                 #time.sleep(15) 
                 #print(button_state.value)
                 if button_state.value is True:
@@ -164,6 +172,7 @@ def main():
                 
                 #GPIO.output(output_pin, GPIO.HIGH)
                 output_pin.value = True
+                output_pin1.value = False
                 disp.image(image)
                 #x = GPIO.input(15)
                 #print(button_state.value)
