@@ -17,6 +17,7 @@ int jetson_cooling = 9;
 
 int weeding_up = 10;
 int weeding_down = 11;
+int solenoid = 12;
 int pwm;
 volatile boolean xbox_sending = false;
 int xbox_says;
@@ -43,7 +44,7 @@ void setup() {
 
   pinMode(weeding_up, OUTPUT);
   pinMode(weeding_down, OUTPUT);
-
+pinMode(solenoid, OUTPUT);
   pinMode(pwm1, OUTPUT);
   pinMode(pwm2, OUTPUT);
   pinMode(pwm3, OUTPUT);
@@ -61,6 +62,9 @@ void setup() {
   //pinMode(jetson_cooling, OUTPUT);
 
   Serial.begin(115200);
+  digitalWrite(weeding_up, HIGH);
+  digitalWrite(weeding_down, HIGH);
+  digitalWrite(solenoid, HIGH);
 }
 
 void loop() {
@@ -70,7 +74,8 @@ void loop() {
 
     ///////////////////////////////////////////////////////////////
     ///////////////////////Xbox Buttons Section/////////////////////
-
+    //digitalWrite(solenoid, HIGH);
+    
     if (xbox_says == 1) //Button A
     {
       Serial.println("Button A");
@@ -88,6 +93,7 @@ void loop() {
     if (xbox_says == 3) //Button X
     {
       Serial.println("Button X");
+      //digitalWrite(solenoid, LOW);
     }
 
     if (xbox_says == 4) //Button Y
@@ -133,6 +139,19 @@ void loop() {
       //xbox_says = 0;
     }
     /////////////////////Xbox Buttons Section/////////////////////
+    //////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////
+    /////////////////////Solenoid Section/////////////////////////
+
+    if (xbox_says == 183) //Button X
+    {
+      Serial.println("Left_Trigger");
+      digitalWrite(solenoid, LOW);
+    }
+
+
+    /////////////////////Solenoid Section/////////////////////////
     //////////////////////////////////////////////////////////////
 
 
@@ -965,7 +984,8 @@ void loop() {
       Final_pwm_180 = 256;
       Final_pwm_270 = 256;
       Final_pwm_360 = 256;
-
+      Serial.println("//////////////////////////////////Stop");
+      digitalWrite(solenoid, HIGH);
       digitalWrite(weeding_up, HIGH);
       digitalWrite(weeding_down, HIGH);
     }
